@@ -12,7 +12,12 @@ void link_monitor_handle_failure(int error, struct Data* d) {
 			case APP_MSG_SEND_TIMEOUT:
 				return;
 			default:
-				vibes_short_pulse();
+			{
+				const uint32_t seg[] = { 3000, 500, 3000};	
+				VibePattern pattern = {.durations =  seg,.num_segments = ARRAY_LENGTH(seg)};
+				vibes_enqueue_custom_pattern(pattern);
+	  			//text_layer_set_text(&debug_layer, "Phone Lost!"); 				
+			}
 
 		}
 		d->link_status = LinkStatusFailed;
