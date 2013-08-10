@@ -1,10 +1,8 @@
-ninety_weather
+ninety_weather _LongVibe
 ==============
 
-91 Weather Watchface.
-This watchface displays the Time, Calendar Week, Sunrise and Sundown and the Weather.
-This required httpebble to be installed on your Smartphone to get the current Weather and Time.
-
-Based on the mod ninety_hank (German) and Roboto + Weather. Provided "as is". NO WARRANTIES!
-
-If you use the source as base for your own watchface, please mention this source in your readme.
+Based on 91 Weather with small modification:
+if the connection to a phone is lost it will give two very long vibes
+instead of a very short vibe in the original "91 Weather".
+Also it will check for connection every minute instead of every two minutes.
+This mod tries to address a problem of you forgetting the phone or you phone being stolen. 
