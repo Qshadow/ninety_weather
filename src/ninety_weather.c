@@ -16,8 +16,8 @@
 #define MY_UUID { 0x91, 0x41, 0xB6, 0x28, 0xBC, 0x89, 0x49, 0x8E, 0xB1, 0x47, 0x29, 0x08, 0xF1, 0x7C, 0x3F, 0xAC}
 
 PBL_APP_INFO(MY_UUID,
-	     "91 Weather", "rfrcarvalho",
-	     1, 5, /* App major/minor version */
+	     "91 Weather +LongVibe", "rfrcarvalho",
+	     1, 7, /* App major/minor version */
 	     RESOURCE_ID_IMAGE_MENU_ICON,
 	     APP_INFO_WATCH_FACE);
 
@@ -68,6 +68,11 @@ const int WEATHER_IMAGE_RESOURCE_IDS[] = {
 	RESOURCE_ID_IMAGE_CLOUDY,
 	RESOURCE_ID_IMAGE_PARTLY_CLOUDY_DAY,
 	RESOURCE_ID_IMAGE_PARTLY_CLOUDY_NIGHT,
+	RESOURCE_ID_IMAGE_THUNDER,
+	RESOURCE_ID_IMAGE_RAIN_SNOW,
+	RESOURCE_ID_IMAGE_SNOW_SLEET,
+	RESOURCE_ID_IMAGE_COLD,
+	RESOURCE_ID_IMAGE_HOT,
 	RESOURCE_ID_IMAGE_NO_WEATHER
 };
 
@@ -171,8 +176,8 @@ void updateSunsetSunrise()
 	  time_format = "%I:%M";
 	}
 
-	float sunriseTime = calcSunRise(pblTime.tm_year, pblTime.tm_mon+1, pblTime.tm_mday, our_latitude / 10000, our_longitude / 10000, 91.0f);
-	float sunsetTime = calcSunSet(pblTime.tm_year, pblTime.tm_mon+1, pblTime.tm_mday, our_latitude / 10000, our_longitude / 10000, 91.0f);
+	float sunriseTime = calcSunRise(pblTime.tm_year, pblTime.tm_mon+1, pblTime.tm_mday, our_latitude / 1000000, our_longitude / 1000000, 91.0f);
+	float sunsetTime = calcSunSet(pblTime.tm_year, pblTime.tm_mon+1, pblTime.tm_mday, our_latitude / 1000000, our_longitude / 1000000, 91.0f);
 	adjustTimezone(&sunriseTime);
 	adjustTimezone(&sunsetTime);
 	
@@ -246,10 +251,10 @@ void success(int32_t cookie, int http_status, DictionaryIterator* received, void
 	Tuple* icon_tuple = dict_find(received, WEATHER_KEY_ICON);
 	if(icon_tuple) {
 		int icon = icon_tuple->value->int8;
-		if(icon >= 0 && icon < 10) {
+		if(icon >= 0 && icon < 16) {
 			set_container_image(&weather_images[0], WEATHER_IMAGE_RESOURCE_IDS[icon], GPoint(12, 5));  // ---------- Weather Image
 		} else {
-			set_container_image(&weather_images[0], WEATHER_IMAGE_RESOURCE_IDS[10], GPoint(12, 5));
+			set_container_image(&weather_images[0], WEATHER_IMAGE_RESOURCE_IDS[15], GPoint(12, 5));
 		}
 	}
 	
@@ -271,8 +276,8 @@ void success(int32_t cookie, int http_status, DictionaryIterator* received, void
 
 void location(float latitude, float longitude, float altitude, float accuracy, void* context) {
 	// Fix the floats
-	our_latitude = latitude * 10000;
-	our_longitude = longitude * 10000;
+	our_latitude = latitude * 1000000;
+	our_longitude = longitude * 1000000;
 	located = true;
 	request_weather();
 }
@@ -438,7 +443,7 @@ void handle_minute_tick(AppContextRef ctx, PebbleTickEvent *t) {
 	    text_layer_set_text(&text_sunset_layer, "Wait!");
     }
 	
-	if(!(t->tick_time->tm_min % 2) || data.link_status == LinkStatusUnknown) link_monitor_ping();
+	if(!(t->tick_time->tm_min % 1) || data.link_status == LinkStatusUnknown) link_monitor_ping();
 }
 
 void handle_init(AppContextRef ctx) {
@@ -594,7 +599,9 @@ void request_weather() {
 	
 	// Build the HTTP request
 	DictionaryIterator *body;
-	HTTPResult result = http_out_get("http://www.zone-mr.net/api/weather.php", WEATHER_HTTP_COOKIE, &body);
+	//HTTPResult result = http_out_get("https://ofkorth.net/pebble/weather.php", WEATHER_HTTP_COOKIE, &body);
+	//HTTPResult result = http_out_get("http://www.zone-mr.net/api/weather.php", WEATHER_HTTP_COOKIE, &body);
+	HTTPResult result = http_out_get("http://www.mirz.com/httpebble/weather-yahoo.php", WEATHER_HTTP_COOKIE, &body);
 	if(result != HTTP_OK) {
 		return;
 	}
