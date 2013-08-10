@@ -1,5 +1,5 @@
 #include "util.h"
-#define INT_DIGITS 5		/* enough for 64 bit integer */
+#define INT_DIGITS 5  	/* enough for 64 bit integer */
 
 char *itoa(int i)
 {
